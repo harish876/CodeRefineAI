@@ -6,6 +6,6 @@ class Settings(BaseSettings):
     judge0_api_key: str
     
     class Config:
-        env_file = "/Users/harishgokul/CodeRefineAI/core/executor/.env"
+        env_file = ".env"
 
 settings = Settings()
