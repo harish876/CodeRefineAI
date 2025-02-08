@@ -9,18 +9,22 @@ class Executor():
     def __init__(self,settings: Settings):
         self._config = settings
         self._querystring = {"base64_encoded":"true","wait":"false","fields":"*"}
-        self._headers = {
-            "x-rapidapi-key": self._config.judge0_api_key,
-            "x-rapidapi-host": "judge0-extra-ce.p.rapidapi.com",
-            "Content-Type": "application/json"
-        }
+        if settings.self_hosted:
+            self._headers = {}
+        else:
+            self._headers = {
+                "x-rapidapi-key": self._config.judge0_api_key,
+                "x-rapidapi-host": "judge0-extra-ce.p.rapidapi.com",
+                "Content-Type": "application/json"
+            }
         self._default_language_id = self.__get_language_id__("python")
     
     
     def __get_language_id__(self, language: str):
+        #Replace with API call here
         match language.lower():
             case "python":
-                return 28
+                return 71 if self._config.self_hosted else 28
             case _:
                 raise ValueError("Unsupported language")
         
@@ -43,6 +47,7 @@ class Executor():
         }
                 
         try:
+            print(url)
             response = requests.post(url, 
                                     json=payload, 
                                     headers=self._headers, 
@@ -51,6 +56,7 @@ class Executor():
             if response.status_code == 201:
                 return response
             else:
+                print(response)
                 raise Exception("Unable to submit code", response)
         
         except requests.exceptions.RequestException as e:
