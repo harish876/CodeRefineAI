@@ -1,7 +1,5 @@
-from pydantic import BaseModel
 from core.utils.base64 import encode_base64
 from typing import List, Optional
-
 import requests
 from core.executor.config import Settings
 
@@ -47,7 +45,6 @@ class Executor():
         }
                 
         try:
-            print(url)
             response = requests.post(url, 
                                     json=payload, 
                                     headers=self._headers, 
