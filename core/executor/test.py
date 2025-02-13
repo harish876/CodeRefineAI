@@ -1,55 +1,96 @@
 import json
 import sys
+import collections
 
-from typing import List
-import random
+from typing import Optional
 
-# Define necessary data structures
+# Necessary DS declarations for different problems
+class Node:
+    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
+
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
+"""
+
 class Solution:
-    def candy(self, ratings: List[int]) -> int:
-        return Solution().compute_candy(ratings)
+    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+        arr = collections.defaultdict(Node)
+        cur = head
+        if not head:
+            return None
 
-    def compute_candy(self, ratings: List[int]) -> int:
-        n = len(ratings)
-        left = [1] * n
-        right = [1] * n
-        for i in range(1, n):
-            if ratings[i] > ratings[i - 1]:
-                left[i] = left[i - 1] + 1
-            else:
-                left[i] = 1
+        while cur:
+            arr[cur] = Node(cur.val, None, None)
+            cur = cur.next
+        
+        cur = head
+        while cur:
+            if cur.random:
+                arr[cur].random = arr[cur.random]
+            if cur.next:
+                arr[cur].next = arr[cur.next]
+            cur = cur.next
+        return arr[head]
 
-        for i in range(n - 2, -1, -1):
-            if ratings[i] > ratings[i + 1]:
-                right[i] = right[i + 1] + 1
-            else:
-                right[i] = 1
-
-        ans = 0
-        for i in range(n):
-            ans += max(left[i], right[i])
-        return ans
-
-# Test case generator
 class TestCaseGenerator:
+
     def generate(self) -> dict:
-        # Example Test Case
-        test_case_1 = {'ratings': [1, 0, 2]}
-        test_case_2 = {'ratings': [1, 2, 2]}
-        # Additional Test Cases
-        test_case_3 = {'ratings': [3, 2, 1]}
-        test_case_4 = {'ratings': [1, 3, 4, 5, 2]}
-        test_case_5 = {'ratings': [1, 2, 87, 87, 87, 2, 1]}
-        return random.choice([test_case_1, test_case_2, test_case_3, test_case_4, test_case_5])
+        nodes = [{'val': 7, 'random_index': None}, {'val': 13, 'random_index': 0}, {'val': 11, 'random_index': 4}, {'val': 10, 'random_index': 2}, {'val': 1, 'random_index': 0}]
+        head = self.build_linked_list(nodes)
+        return {'head': head}
+
+    def build_linked_list(self, node_info):
+        if not node_info:
+            return None
+        nodes = [Node(info['val']) for info in node_info]
+        for i in range(len(nodes) - 1):
+            nodes[i].next = nodes[i + 1]
+        for i, info in enumerate(node_info):
+            if info['random_index'] is not None:
+                nodes[i].random = nodes[info['random_index']]
+        return nodes[0]
 
     def encode_input(self, input_obj) -> str:
-        return str(input_obj)
+        return str(self.linked_list_to_array(input_obj['head']))
 
     def encode_output(self, output_obj) -> str:
-        return str(output_obj)
+        if not output_obj:
+            return str([])
+        return str(self.linked_list_to_array(output_obj))
 
     def decode_input(self, input_str) -> dict:
-        return eval(input_str)
+        data = eval(input_str)
+        return {'head': self.build_linked_list(data)}
+
+    def linked_list_to_array(self, head: 'Node') -> list:
+        if not head:
+            return []
+        nodes = []
+        current = head
+        while current:
+            random_index = None
+            if current.random is not None:
+                random_index = self.find_index(head, current.random)
+            nodes.append({'val': current.val, 'random_index': random_index})
+            current = current.next
+        return nodes
+
+    def find_index(self, head: 'Node', node: 'Node') -> int:
+        current, index = (head, 0)
+        while current:
+            if current == node:
+                return index
+            current = current.next
+            index += 1
+        return -1
 
 class Runner:
     def __init__(self, solution: Solution):
@@ -60,14 +101,14 @@ class Runner:
         test_cases = json.loads(sys.stdin.read().strip())
 
         for test_case in test_cases:
-            decoded_input = self.test.decode_input(test_case['input'])
+            input = self.test.decode_input(test_case['input'])
             expected_output = test_case['output']
             
-            output = self.solution.candy(decoded_input)
+            output = self.solution.copyRandomList(**input)
             actual_output = self.test.encode_output(output)
             
             if actual_output != expected_output:
-                print("Input", decoded_input)
+                print("Input", input)
                 print("Expected Output: ", expected_output)
                 print("Actual Output: ", actual_output)
                 print("Test Failed!")
