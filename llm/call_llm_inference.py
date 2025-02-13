@@ -13,7 +13,7 @@ def init_llm_model(model_name="Qwen/Qwen2.5-Coder-1.5B-Instruct"):
     sampling_params = SamplingParams(temperature=0.7, top_p=0.8, repetition_penalty=1.05, max_tokens=512)
 
     # Input the model name or path. Can be GPTQ or AWQ models.
-    llm = LLM(model=model_name,max_num_seqs=8)
+    llm = LLM(model=model_name,max_num_seqs=16,gpu_memory_utilization=0.3) #,tensor_parallel_size=4
     return tokenizer, sampling_params, llm
 
 def inference(tokenizer, sampling_params, llm,prompt):
