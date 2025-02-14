@@ -20,7 +20,7 @@ from itertools import permutations, zip_longest
 from heapq import heappush, heappop, heapify
 from collections import deque, defaultdict, OrderedDict, Counter
 from typing import List, Optional, Tuple
-# from functools import lru_cache, cache
+from functools import lru_cache
 
 {import_code}
 

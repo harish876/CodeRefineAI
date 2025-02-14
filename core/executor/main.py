@@ -14,7 +14,7 @@ def submit(executor: Executor, source_file: str, result_file: str):
         
     submissions: List[ExecutorResponse] = []
     for _, row in df.iterrows():
-        solution = get_solution(row)
+        solution = get_solution(row["question_id"],row)
         result = executor.execute(
             code_template=template,
             solution_code=solution,
@@ -32,6 +32,9 @@ def get_results(executor: Executor, result_file: str):
         saved_submissions = json.load(infile)
     
     for saved_submission in saved_submissions:
+        if not saved_submission.get('token',None):
+            continue
+        
         submission_details = executor.get_submission_details(submission_id=saved_submission['token'])
         saved_submission['submission_details'] = submission_details.json()
         
@@ -72,6 +75,7 @@ def main():
     print(f"Data Directory: {data_dir}")
     print(f"Source File: {source_file}")
     print(f"Result File: {result_file}")
+    print("================================")
     
     if args.action == "submit":
         submit(executor, source_file, result_file)
