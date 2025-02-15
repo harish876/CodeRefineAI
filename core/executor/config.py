@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     judge0_base_url: str
     judge0_api_key: str
     google_gemini_api_key: str
+    num_runs: int
     
     class Config:
         env_file = ".env"

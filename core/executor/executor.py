@@ -15,6 +15,7 @@ class ExecutorResponse(BaseModel):
     title: str
     token: Optional[str] = None
     error: Optional[str] = None 
+    code: Optional[str] = None
         
         
 class Executor():
@@ -55,7 +56,7 @@ class Executor():
             "stdin": encode_base64(test_cases),
             "source_code": encode_base64(raw_source_code),
             "expected_output": encode_base64(expected_results),
-            "number_of_runs": 1
+            "number_of_runs": self._config.num_runs
         }
                 
         try:
@@ -87,7 +88,17 @@ class Executor():
             raise f"Error submitting code: {e}"
         
     def execute(self,code_template: str,solution_code:Optional[str],metadata: pd.Series) -> ExecutorResponse:
-        test_case_code = extract_class(metadata['setup_code'], "TestCaseGenerator")
+        setup_code = metadata.get('setup_code', None)
+        if not setup_code :
+            return ExecutorResponse(
+                status="failure",
+                question_id=metadata["question_id"],
+                title=metadata["name"],
+                token=None,
+                error="No Setup code found",
+            )
+            
+        test_case_code = extract_class(setup_code, "TestCaseGenerator")
         if not test_case_code :
             return ExecutorResponse(
                 status="failure",
@@ -103,7 +114,7 @@ class Executor():
                 question_id =   metadata["question_id"],
                 title =  metadata["name"],
                 token =  None,
-                error =  "No solution found"
+                error =  "No solution found",
             )
          
         entry_point = metadata['entry_point']
@@ -118,7 +129,7 @@ class Executor():
         result:Response=self.submit(
                         raw_source_code=raw_source_code, 
                         test_cases=test_cases, 
-                        expected_results="Test Passed!"
+                        expected_results="Tests Passed!"
                 )
             
         submission_id = result.json()["token"]
@@ -127,5 +138,6 @@ class Executor():
             question_id =  metadata["question_id"],
             title =  metadata["name"],
             token = submission_id,
+            code = raw_source_code
         )
  

@@ -10,7 +10,6 @@ class Node:
         self.val = int(x)
         self.next = next
         self.random = random
-
 """
 # Definition for a Node.
 class Node:
