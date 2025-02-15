@@ -1,10 +1,22 @@
+import json
+import pandas as pd
 from pydantic import BaseModel
+import requests
+from core.utils.ast import extract_class
 from core.utils.base64 import encode_base64
 from typing import List, Optional
-
-import requests
+from requests import Response
 from core.executor.config import Settings
 
+
+class ExecutorResponse(BaseModel):
+    status: str
+    question_id: int
+    title: str
+    token: Optional[str] = None
+    error: Optional[str] = None 
+        
+        
 class Executor():
     def __init__(self,settings: Settings):
         self._config = settings
@@ -47,7 +59,6 @@ class Executor():
         }
                 
         try:
-            print(url)
             response = requests.post(url, 
                                     json=payload, 
                                     headers=self._headers, 
@@ -65,7 +76,7 @@ class Executor():
     def get_submission_details(self,submission_id: str):
         try:
             url = f"{self._config.judge0_base_url}/submissions/{submission_id}"
-            response = requests.get(url, headers=self._headers, params=self._querystring)
+            response = requests.get(url, headers=self._headers)
               
             if response.status_code == 200:
                 return response
@@ -74,3 +85,47 @@ class Executor():
         
         except requests.exceptions.RequestException as e:
             raise f"Error submitting code: {e}"
+        
+    def execute(self,code_template: str,solution_code:Optional[str],metadata: pd.Series) -> ExecutorResponse:
+        test_case_code = extract_class(metadata['setup_code'], "TestCaseGenerator")
+        if not test_case_code :
+            return ExecutorResponse(
+                status="failure",
+                question_id=metadata["question_id"],
+                title=metadata["name"],
+                token=None,
+                error="No test case decoder found",
+            )
+            
+        if not solution_code :
+            return ExecutorResponse(
+                status =  "failure",
+                question_id =   metadata["question_id"],
+                title =  metadata["name"],
+                token =  None,
+                error =  "No solution found"
+            )
+         
+        entry_point = metadata['entry_point']
+        import_code = metadata['import_code']
+        raw_source_code =code_template.format(
+            entry_point=entry_point,
+            import_code=import_code,
+            solution_code = solution_code,
+            test_case_code=test_case_code,
+        )
+        test_cases = json.dumps(metadata['test_cases'])
+        result:Response=self.submit(
+                        raw_source_code=raw_source_code, 
+                        test_cases=test_cases, 
+                        expected_results="Test Passed!"
+                )
+            
+        submission_id = result.json()["token"]
+        return ExecutorResponse(
+            status =  "success",
+            question_id =  metadata["question_id"],
+            title =  metadata["name"],
+            token = submission_id,
+        )
+ 

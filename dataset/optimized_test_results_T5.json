@@ -1,0 +1,32 @@
+[
+    {
+        "question_id":131,
+        "name":"palindrome-partitioning",
+        "inefficient_code":"class Solution:\n    def partition(self, s: str) -> List[List[str]]:\n        res = []\n\n        def backtrack(i,curr):\n            if i==len(s):\n                res.append(curr[:])\n            \n            for j in range(i,len(s)):\n                if s[i:j+1]==s[i:j+1][::-1]:\n                    curr.append(s[i:j+1])\n                    backtrack(j+1,curr)\n                    curr.pop()\n\n        backtrack(0,[])\n        return res",
+        "optimized_code":"def partition(self, s: str) -> List[List[str]]: res = List[str] def backtrack(i, curr): if i==len(s): res.append(curr[:]) for j in range(i,len(s)): if s[i:j+1]==s[i:j+1][::-1]: curr.append(s[i:j+1]) backtrack(j+1,curr) curr.pop() backtrack(0,curr) return res"
+    },
+    {
+        "question_id":132,
+        "name":"palindrome-partitioning-ii",
+        "inefficient_code":"class Solution:\n    def minCut(self, s: str) -> int:\n        def is_palindrome(s):\n            return s == s[::-1]\n        \n        @lru_cache(None)\n        def f(s):\n            if not s or len(s) == 1 or is_palindrome(s):\n                return 0\n\n            min_ = float('inf')\n\n\n                \n            for j in range(len(s)):\n                if is_palindrome(s[:j+1]):\n                    min_ = min(min_, 1 + f(s[j+1:]))\n            return min_\n\n        return f(s)\n            \n",
+        "optimized_code":"def minCut(self, s: str) -> int: def is_palindrome(s): return s == s[::-1] @lru_cache(None) def f(s): if not s or len(s) == 1 or is_palindrome(s): return 0 min_ = float('inf') for j in range(len(s)): if is_palindrome(s[j+1:j]): min_ = min(min_, 1 + f(s[j+1:j])) return min_ return f(s)"
+    },
+    {
+        "question_id":133,
+        "name":"clone-graph",
+        "inefficient_code":"\"\"\"\n# Definition for a Node.\nclass Node:\n    def __init__(self, val = 0, neighbors = None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\"\"\"\n\nfrom typing import Optional\nclass Solution:\n    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:\n        cloneMap={}\n        def dfs(node):\n            if(node in cloneMap):\n                return cloneMap[node]\n            copy = Node(node.val)\n            cloneMap[node]=copy\n            for i in node.neighbors:\n                copy.neighbors.append(dfs(i))\n            return copy\n        return dfs(node) if node else None",
+        "optimized_code":"# Definition of a Node. class Node: def __init__(self, val = 0, neighbors = None): self.val = val self.neighbors = neighbors if neighbors is not None else [] def cloneGraph(self, node: Optional['Node']) -> Optional['Node']: cloneMap= def dfs(node): if(node in cloneMap): return cloneMap[node] copy = dfs(node) cloneMap[node] = copy for i in node.neighbors: copy.neighbors.append(dfs(i)) return copy return dfs(node) if node else None"
+    },
+    {
+        "question_id":134,
+        "name":"gas-station",
+        "inefficient_code":"class Solution:\n    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:\n        n = len(gas)\n        total_gas = 0\n        curr_gas = 0\n        start_index = 0\n\n        for i in range(n):\n            total_gas += gas[i] - cost[i]\n            curr_gas += gas[i] - cost[i]\n\n            if curr_gas < 0:\n                curr_gas = 0\n                start_index = i + 1\n        \n        return start_index if total_gas >= 0 else -1\n            \n\n\n# Naive: iterate through gas, then check costs. if it doesnt work, move to next starting index and continue. O(n^2) time. Can we optimize? to O(n)? extra data structure? ",
+        "optimized_code":"def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int: n = len(gas) total_gas = 0, curr_gas = 0, start_index = 0 for i in range(n): total_gas += gas[i] - cost[i] curr_gas += gas[i] - cost[i] if curr_gas  0: curr_gas = 0 start_index = i + 1 return start_index if total_gas >= 0 else -1"
+    },
+    {
+        "question_id":135,
+        "name":"candy",
+        "inefficient_code":"class Solution:\n    def candy(self, ratings: List[int]) -> int:\n        n=len(ratings)\n        sortedArr=[(ratings[i],i) for i in range(n)]\n        sortedArr.sort()\n        ans=[0]*n\n        for i in range(n):\n            curCandies=1\n            val,index=sortedArr[i]\n            if (index>0 and ratings[index-1]<ratings[index] and ans[index-1]>=curCandies):\n                curCandies=ans[index-1]+1\n            if (index<n-1 and ratings[index+1]<ratings[index] and ans[index+1]>=curCandies):\n                curCandies=ans[index+1]+1\n            ans[index]=curCandies\n        return sum(ans)\n            \n            \n        ",
+        "optimized_code":"def candy(self, ratings: List[int]) -> int: n = len(ratings) sortedArr = [(ratings[i],i) for i in range(n)] sortedArr.sort() ans = [0]*n for i in range(n): curCandies = 1 val,index = sortedArr[i] if (index > 0 and ratings[index-1]ratings[index] and ans[index-1]>=curCandies): curCandies = ans[index-1]+1 if (index  n-1 and ratings[index+1]ratings[index] and ans[index+1]>=curCandies): curCandies = ans[index+1]+1 ans[index]=curCandies return sum(ans)"
+    }
+]

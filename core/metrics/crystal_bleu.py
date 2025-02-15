@@ -5,6 +5,13 @@ import re
 from pygments.lexers.python import PythonLexer
 from crystalbleu import corpus_bleu,sentence_bleu
 
+
+prediction = "def add ( a , b ) :\n return a + b"
+reference = "def sum ( first , second ) :\n return second + first"
+lexer = PythonLexer()
+tokens = list(lexer.get_tokens(prediction))
+print(tokens)
+
 # 2. Extract trivially shared n-grams
 k = 500
 
