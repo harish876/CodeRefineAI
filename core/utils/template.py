@@ -21,6 +21,7 @@ from heapq import heappush, heappop, heapify
 from collections import deque, defaultdict, OrderedDict, Counter
 from typing import List, Optional, Tuple
 from functools import lru_cache
+from sortedcontainers import SortedList
 
 {import_code}
 
@@ -51,11 +52,13 @@ class Runner:
     def __init__(self, solution: Solution):
         self.solution: Solution = solution
         self.test = TestCaseGenerator()
+        self.num_tests = 10 # Change dynamically
     
     def run(self):
         test_cases = json.loads(sys.stdin.read().strip())
 
-        for test_case in test_cases:
+        for i in range(min(self.num_tests,len(test_cases))):
+            test_case = test_cases[i]
             input = self.test.decode_input(test_case['input'])
             expected_output = test_case['output']
             
@@ -66,10 +69,11 @@ class Runner:
                 print("Input", input)
                 print("Expected Output: ", expected_output)
                 print("Actual Output: ", actual_output)
-                print("Test Failed!")
+                print(f"{{i+1}} Test Failed!")
                 return
         
-        print("Test Passed!")
+        #print metadata to stderr
+        print("Tests Passed!")
 
 if __name__ == "__main__":
     solution = Solution()

@@ -1,12 +1,40 @@
-#TODO: Enable this to choose code for different use cases, like memory,runtime inefficient,moderate etc...
+import enum
+import os
+from attr import dataclass
 import pandas as pd
 import json
+from typing import  Optional, Tuple
 
-from_file = True
+@dataclass
+class SolutionMetric(enum.Enum):
+    RUNTIME = "runtime"
+    MEMORY = "memory"
+    
+@dataclass
+class SolutionType(enum.Enum):
+    EFFICIENT = "efficient"
+    INEFFICIENT = "inefficient"
+    MODERATE = "moderate"
 
-def get_solution(question_id: int, row: pd.Series = None) -> str:
-    if from_file:
-        with open("/Users/harishgokul/CodeRefineAI/dataset/optimized_test_results_meta.json", "r") as file:
+
+def get_solution_mapping(solution_metric: SolutionMetric,solution_type: SolutionType):
+    return f"{solution_metric.value}_{solution_type.value}_codes"
+    
+
+def get_solution(
+    question_id: int, 
+    data_file_path: Optional[str],
+    solution_metric: SolutionMetric = SolutionMetric.RUNTIME,
+    solution_type: SolutionType = SolutionType.EFFICIENT,
+    row: Optional[pd.Series] = None
+    ) -> Tuple[Optional[str],Optional[str]]:
+    
+    
+    if data_file_path is not None:
+        if not os.path.exists(data_file_path):
+            return (None,"Solution File not found")
+        
+        with open(data_file_path, "r") as file:
             optimized_data = json.load(file)
             
         solution_code = None
@@ -15,12 +43,17 @@ def get_solution(question_id: int, row: pd.Series = None) -> str:
                 solution_code = record["optimized_code"]
                 break
         
-        return solution_code
+        return (solution_code,None)
         
     else:
-        solution_code = row['runtime_efficient_codes']
+        field = get_solution_mapping(solution_metric,solution_type)
+        solution_code = row[field]
         if not solution_code:
-            print("Runtime efficient solution not available")
-            return None
+            return (None,f"{field.replace('_', ' ').capitalize()} solution not available in dataset")
         
-        return solution_code[0]["code"]
+        if len(solution_code) == 0:
+            return (None,f"Solution for {field.value} not available in dataset. Length is 0")
+            
+        #TODO: sort as per the runtime or memory
+        return (solution_code[0]["code"],None)
+    

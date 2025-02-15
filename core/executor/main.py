@@ -1,20 +1,39 @@
 from typing import List
+
+from openai import NoneType
 from core.executor.config import Settings
 from core.executor.executor import Executor, ExecutorResponse
 import pandas as pd
-from core.executor.solution import get_solution
+from core.executor.solution import SolutionMetric, SolutionType, get_solution
 from core.utils.template import *
 import json
 import os
 import time
 import argparse
 
-def submit(executor: Executor, source_file: str, result_file: str):
+def submit(executor: Executor, source_file: str, result_file: str, solution_metadata: dict[str,any]):
     df = pd.read_json(source_file)
         
     submissions: List[ExecutorResponse] = []
     for _, row in df.iterrows():
-        solution = get_solution(row["question_id"],row)
+        id = row["question_id"]
+        solution_metric = SolutionMetric[solution_metadata["solution_metric"].upper()]
+        solution_type = SolutionType[solution_metadata["solution_type"].upper()]
+        solution, error = get_solution(
+            question_id=id,
+            data_file_path=solution_metadata["solution_file"],
+            solution_metric=solution_metric,
+            solution_type=solution_type,
+            row=row
+        )
+        if solution is None:
+            print(f"Error at question_id {id}.No solution found")
+            continue
+        
+        if error is not None:
+            print(f"Error at question_id {id} {error}.")
+            continue
+        
         result = executor.execute(
             code_template=template,
             solution_code=solution,
@@ -51,6 +70,9 @@ def main():
     parser.add_argument("action", choices=["submit", "get"], help="Action to perform")
     parser.add_argument("--file", help="Source file containing dataset. Do not add the extension", default="dataset_preview")
     parser.add_argument("--dir", help="Base directory to fetch files from", default=data_dir)
+    parser.add_argument("--solution_file", help="Source file containing Solution dataset. Solutions from LLM's", default=None)
+    parser.add_argument("--solution_metric", help = "Solution metric if the row is passed in [runtime,memory]", default="runtime")
+    parser.add_argument("--solution_type", help = "Solution type if the row is passed in [efficient,inefficient,moderate]", default="efficient")
     args = parser.parse_args()
 
     
@@ -62,6 +84,7 @@ def main():
     file_name = args.file
     source_file = os.path.join(data_dir, f"{file_name}.json")
     result_file = os.path.join(data_dir, f"{file_name}_submissions.json")
+    solution_file = os.path.join(data_dir, f"{args.solution_file}.json") if args.solution_file else None
     
     if not os.path.exists(source_file):
         print(f"Source file does not exist {source_file}")
@@ -71,14 +94,19 @@ def main():
         with open(result_file, "w") as f:
             json.dump([], f)
         
-    print("Config: ")
+    print("Args ================================")
     print(f"Data Directory: {data_dir}")
     print(f"Source File: {source_file}")
     print(f"Result File: {result_file}")
+    print(f"Solution File: {solution_file}")
     print("================================")
     
     if args.action == "submit":
-        submit(executor, source_file, result_file)
+        submit(executor, source_file, result_file, {
+            "solution_file": solution_file,
+            "solution_metric": args.solution_metric,
+            "solution_type": args.solution_type
+        })
     elif args.action == "get":
         get_results(executor, result_file)
 
