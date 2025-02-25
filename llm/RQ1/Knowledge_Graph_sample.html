@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": 1, "label": "Q1", "shape": "circle", "size": 10, "title": "The code uses nested loops to find the two numbers that sum up to the target. Th\nis leads to an O(n^2) time complexity, which is inefficient.  The inner loop ite\nrates over the entire `nums` list for each element in the outer loop. This invol\nves redundant comparisons and unnecessary iterations, especially after a matchin\ng pair has already been found (but the code continues searching). A better appro\nach would be to use a hash map (dictionary) to store the numbers and their indic\nes, allowing for O(n) time complexity. Returning indices within the loop rather \nthan collecting them in a list `indexes` and only returning at the end could pot\nentially provide early exit and performance enhancement, depending on input data\n. Also, the code finds multiple index pairs when only one is requested by the pr\nompt."}, {"color": "red", "id": "Highly Confident", "label": "Highly Confident", "shape": "square", "size": 10}, {"color": "blue", "id": "Frustration", "label": "Frustration", "shape": "square", "size": 10}, {"color": "green", "id": "Nested Loops", "label": "Nested Loops", "shape": "square", "size": 10}, {"color": "green", "id": "Redundant Computation", "label": "Redundant Computation", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Iteration", "label": "Unnecessary Iteration", "shape": "square", "size": 10}, {"color": "#97c2fc", "id": 2, "label": "Q2", "shape": "circle", "size": 10, "title": "The code appears to be a standard and efficient solution for adding two numbers \nrepresented as linked lists. It iterates through the lists, adding the correspon\nding digits along with any carry, and creates a new linked list to store the res\nult. There are no apparent major inefficiencies."}, {"color": "#97c2fc", "id": 4, "label": "Q4", "shape": "circle", "size": 10, "title": "The code concatenates two lists and then sorts the combined list.  This is ineff\nicient because sorting has a time complexity of O(n log n) where n is the total \nlength of the combined array. Moreover, list concatenation creates a new list in\n memory. A more efficient approach would be to use a merge-like algorithm to fin\nd the median without fully sorting the array. This is particularly detrimental f\nor larger input lists."}, {"color": "#97c2fc", "id": 5, "label": "Q5", "shape": "circle", "size": 10, "title": "The code uses a brute-force approach by checking all possible substrings for pal\nindromes. This leads to redundant palindrome checks and an O(n^3) time complexit\ny. The use of `_s in palin` early in the `check` function is misplaced; it\u0027s sup\nposed to prevent rechecking substrings known *not* to be palindromes, but instea\nd checks if a substring that\u0027s *currently being checked* already exists in the `\npalin` set (which it never will, initially). String slicing (`s[i : j + 1]`) wit\nhin nested loops contributes to overhead. The use of a `set` (`palin`) attempts \nto optimize palindrome lookup, but it\u0027s used incorrectly and doesn\u0027t mitigate th\ne fundamental algorithmic inefficiency."}, {"color": "#97c2fc", "id": 6, "label": "Q6", "shape": "circle", "size": 10, "title": "The code uses string concatenation within loops, which creates new string object\ns on each iteration and is inefficient in Python.  The nested loops and multiple\n appends to build the \u0027strings\u0027 list introduce significant overhead. The logic f\nor zig-zag traversal is also convoluted and hard to follow. The use of \u0027_\u0027 as a \nplaceholder introduces further iteration and conditional checks. Replacing the p\nlaceholder with a more efficient data structure and using a clearer zig-zag trav\nersal algorithm could significantly improve performance. Pre-allocating the stri\nng and directly assigning characters based on the zig-zag pattern would be more \nefficient."}, {"color": "#97c2fc", "id": 8, "label": "Q8", "shape": "circle", "size": 10, "title": "The code iterates through the entire string `s` even after a valid number has be\nen parsed. Using string concatenation (`string_number += char`) within a loop ca\nn be inefficient as strings are immutable in Python, leading to the creation of \nnew string objects in each iteration. The code manually manages the state of `st\nart_digit` and `negative` using boolean flags, which adds complexity and could p\notentially lead to errors if not handled carefully. Using a more concise parsing\n approach or regex might be faster. List comprehension and `join` is an efficien\nt way to create the integer string."}, {"color": "#97c2fc", "id": 9, "label": "Q9", "shape": "circle", "size": 10, "title": "The code assigns `x` to `x2` which is only used for calculation but never mutate\nd within the return result. This creates an unnecessary copy of the input. Furth\ner, constructing the reversed number `num` by multiplying by 10 in each iteratio\nn can potentially lead to integer overflow if the reversed number exceeds the ma\nximum integer value that Python can represent. This can lead to incorrect result\ns."}, {"color": "#97c2fc", "id": 10, "label": "Q10", "shape": "circle", "size": 10, "title": "The code uses recursion to handle the `*` wildcard, leading to exponential time \ncomplexity in worst-case scenarios due to repeated subproblems. The `s[j:]` crea\ntes new strings on each recursive call, increasing memory usage and time. Also, \nthe inner `while` loop increments \u0027j\u0027 and recursively calls the function, potent\nially checking the same substrings multiple times. Memoization could store the r\nesults of subproblems, and avoiding slicing would save resources."}, {"color": "#97c2fc", "id": 11, "label": "Q11", "shape": "circle", "size": 10, "title": "The inner `while` loops advance `left` and `right` even after the container form\ned by `height[left]` and `height[right]` has been evaluated.  The outer `while` \nloop condition (`left \u003c right`) already ensures that the pointers eventually mee\nt, and these inner loops unnecessarily iterate through elements that would form \nsmaller containers.  Removing them would streamline the algorithm. The `h` is re\ncalculated every outer loop iteration when it can just be calculated when either\n `left` or `right` pointer is changed."}, {"color": "#97c2fc", "id": 12, "label": "Q12", "shape": "circle", "size": 10, "title": "The code is efficient in terms of time complexity. It iterates through a fixed-s\nize dictionary and performs subtraction, which takes O(1) time for each key-valu\ne pair. There is no algorithmic inefficiency."}, {"color": "#97c2fc", "id": 13, "label": "Q13", "shape": "circle", "size": 10, "title": "The provided code is already quite efficient for its purpose. It iterates throug\nh the Roman numeral string once, performing constant-time lookups in a dictionar\ny. There are no nested loops or obviously redundant computations. The code\u0027s spa\nce complexity is also low, mainly due to the dictionary used to store Roman nume\nral values. While minor micro-optimizations might be possible, they would likely\n not significantly impact performance."}, {"color": "#97c2fc", "id": 14, "label": "Q14", "shape": "circle", "size": 10, "title": "The code sorts the input list `strs` by length. While the intention might be to \noptimize the search by starting with the shortest string, this sorting operation\n has a time complexity of O(n log n), where n is the number of strings.  This ov\nerhead might outweigh the benefits, especially for small input lists. The shorte\nst string is a simple `min(strs, key=len)` which avoids the full sort. Additiona\nlly, premature optimization because the input data is unknown so optimizing befo\nre profiling doesn\u0027t necessarily improve the run time. The loop could also be ma\nde slightly more performant by using `zip` rather than indexing."}, {"color": "#97c2fc", "id": 16, "label": "Q16", "shape": "circle", "size": 10, "title": "The code iterates through all possible pairs (i, j) and then uses binary search \nto find the closest third number. While the binary search itself is efficient, t\nhe outer two loops iterate through all possible pairs, leading to O(n^2 log n) c\nomplexity. The two-pointer approach (commented out) provides a better O(n^2) com\nplexity. Also, `complement` calculation repeats in inner loop. Finally, the brea\nk condition (if diff == 0) might improve the performance but does not fundamenta\nlly change the complexity."}, {"color": "#97c2fc", "id": 18, "label": "Q18", "shape": "circle", "size": 10, "title": "Using a `set` (`res`) to store the results initially avoids duplicate quadruplet\ns, but converting it to a `list` at the end incurs a space and time overhead. Th\ne set is used because the basic algorithm might produce duplicate combinations, \nhowever by using while loops we can prevent duplicates. The optimal method would\n have been to skip duplicate values, but using the set makes the problem easily \nsolvable.  The conversion from set to list could be avoided by a more careful ap\nproach that skips duplicate combinations during the search process or by convert\ning to a list only after ensuring no duplicates were added."}, {"color": "#97c2fc", "id": 20, "label": "Q20", "shape": "circle", "size": 10, "title": "The provided code is relatively efficient and has no obvious performance bottlen\necks. It uses a stack and dictionary lookup, both of which have good time comple\nxity. The code iterates through the string once, performing constant-time operat\nions for each character. Therefore, no major inefficiencies are apparent."}, {"color": "blue", "id": "Neutral", "label": "Neutral", "shape": "square", "size": 10}, {"color": "blue", "id": "Disappointment", "label": "Disappointment", "shape": "square", "size": 10}, {"color": "green", "id": "Unoptimized Sorting", "label": "Unoptimized Sorting", "shape": "square", "size": 10}, {"color": "green", "id": "List Concatenation Overhead", "label": "List Concatenation Overhead", "shape": "square", "size": 10}, {"color": "green", "id": "Brute Force Approach", "label": "Brute Force Approach", "shape": "square", "size": 10}, {"color": "green", "id": "Unoptimized Data Structure", "label": "Unoptimized Data Structure", "shape": "square", "size": 10}, {"color": "green", "id": "String Slicing Overhead", "label": "String Slicing Overhead", "shape": "square", "size": 10}, {"color": "green", "id": "Premature Optimization (Incorrect)", "label": "Premature Optimization (Incorrect)", "shape": "square", "size": 10}, {"color": "green", "id": "Inefficient String Manipulation", "label": "Inefficient String Manipulation", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Iterations", "label": "Unnecessary Iterations", "shape": "square", "size": 10}, {"color": "green", "id": "Unclear Logic", "label": "Unclear Logic", "shape": "square", "size": 10}, {"color": "green", "id": "Use of Placeholders", "label": "Use of Placeholders", "shape": "square", "size": 10}, {"color": "blue", "id": "Concern", "label": "Concern", "shape": "square", "size": 10}, {"color": "green", "id": "String Concatenation in Loop", "label": "String Concatenation in Loop", "shape": "square", "size": 10}, {"color": "green", "id": "Manual State Management", "label": "Manual State Management", "shape": "square", "size": 10}, {"color": "#97c2fc", "id": 15, "label": "Q15", "shape": "circle", "size": 10, "title": "The code contains checks like `if r\u003clen(nums)-2 and nums[r]==nums[r+1]:` which s\neems potentially incorrect. The check `r \u003c len(nums)-2` looks like a bug, becaus\ne if r is at the second to last position in the sorted array it can still be par\nt of the correct answer and we should check if `nums[r]==nums[r+1]`. Additionall\ny, `l\u003ei+1` is used to avoid duplicate triplets and improve performance. This mak\nes the code less readable and more prone to errors. We are doing similar operati\nons (e.g. incrementing `l` and decrementing `r` inside nested conditions). By si\nmplifying the loops we can improve readability and maintainability."}, {"color": "green", "id": "Unnecessary Variable Assignment", "label": "Unnecessary Variable Assignment", "shape": "square", "size": 10}, {"color": "green", "id": "Potential Integer Overflow", "label": "Potential Integer Overflow", "shape": "square", "size": 10}, {"color": "green", "id": "Recursion without Memoization", "label": "Recursion without Memoization", "shape": "square", "size": 10}, {"color": "green", "id": "String Slicing in Recursive Calls", "label": "String Slicing in Recursive Calls", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Looping within Recursion", "label": "Unnecessary Looping within Recursion", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Nested Loops", "label": "Unnecessary Nested Loops", "shape": "square", "size": 10}, {"color": "blue", "id": "Positive", "label": "Positive", "shape": "square", "size": 10}, {"color": "green", "id": "None", "label": "None", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Sorting", "label": "Unnecessary Sorting", "shape": "square", "size": 10}, {"color": "green", "id": "Premature Optimization", "label": "Premature Optimization", "shape": "square", "size": 10}, {"color": "red", "id": "Medium Confident", "label": "Medium Confident", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Boundary Checks", "label": "Unnecessary Boundary Checks", "shape": "square", "size": 10}, {"color": "green", "id": "Redundant Boundary Checks", "label": "Redundant Boundary Checks", "shape": "square", "size": 10}, {"color": "green", "id": "Unoptimized Search", "label": "Unoptimized Search", "shape": "square", "size": 10}, {"color": "blue", "id": "Mild Concern", "label": "Mild Concern", "shape": "square", "size": 10}, {"color": "green", "id": "Unnecessary Data Structure", "label": "Unnecessary Data Structure", "shape": "square", "size": 10}, {"color": "green", "id": "Suboptimal Space Complexity", "label": "Suboptimal Space Complexity", "shape": "square", "size": 10}]);
+                  edges = new vis.DataSet([{"from": 1, "to": "Highly Confident", "width": 1}, {"from": 1, "to": "Frustration", "width": 1}, {"from": 1, "to": "Nested Loops", "width": 1}, {"from": 1, "to": "Redundant Computation", "width": 1}, {"from": 1, "to": "Unnecessary Iteration", "width": 1}, {"from": "Highly Confident", "to": 2, "width": 1}, {"from": "Highly Confident", "to": 4, "width": 1}, {"from": "Highly Confident", "to": 5, "width": 1}, {"from": "Highly Confident", "to": 6, "width": 1}, {"from": "Highly Confident", "to": 8, "width": 1}, {"from": "Highly Confident", "to": 9, "width": 1}, {"from": "Highly Confident", "to": 10, "width": 1}, {"from": "Highly Confident", "to": 11, "width": 1}, {"from": "Highly Confident", "to": 12, "width": 1}, {"from": "Highly Confident", "to": 13, "width": 1}, {"from": "Highly Confident", "to": 14, "width": 1}, {"from": "Highly Confident", "to": 16, "width": 1}, {"from": "Highly Confident", "to": 18, "width": 1}, {"from": "Highly Confident", "to": 20, "width": 1}, {"from": "Frustration", "to": 5, "width": 1}, {"from": "Frustration", "to": 6, "width": 1}, {"from": "Frustration", "to": 10, "width": 1}, {"from": "Frustration", "to": 16, "width": 1}, {"from": "Redundant Computation", "to": 5, "width": 1}, {"from": "Redundant Computation", "to": 6, "width": 1}, {"from": "Redundant Computation", "to": 11, "width": 1}, {"from": "Redundant Computation", "to": 16, "width": 1}, {"from": "Unnecessary Iteration", "to": 8, "width": 1}, {"from": "Unnecessary Iteration", "to": 16, "width": 1}, {"from": 2, "to": "Neutral", "width": 1}, {"from": "Neutral", "to": 13, "width": 1}, {"from": "Neutral", "to": 14, "width": 1}, {"from": "Neutral", "to": 20, "width": 1}, {"from": 4, "to": "Disappointment", "width": 1}, {"from": 4, "to": "Unoptimized Sorting", "width": 1}, {"from": 4, "to": "List Concatenation Overhead", "width": 1}, {"from": "Disappointment", "to": 11, "width": 1}, {"from": 5, "to": "Brute Force Approach", "width": 1}, {"from": 5, "to": "Unoptimized Data Structure", "width": 1}, {"from": 5, "to": "String Slicing Overhead", "width": 1}, {"from": 5, "to": "Premature Optimization (Incorrect)", "width": 1}, {"from": 6, "to": "Inefficient String Manipulation", "width": 1}, {"from": 6, "to": "Unnecessary Iterations", "width": 1}, {"from": 6, "to": "Unclear Logic", "width": 1}, {"from": 6, "to": "Use of Placeholders", "width": 1}, {"from": 8, "to": "Concern", "width": 1}, {"from": 8, "to": "String Concatenation in Loop", "width": 1}, {"from": 8, "to": "Manual State Management", "width": 1}, {"from": "Concern", "to": 9, "width": 1}, {"from": "Concern", "to": 15, "width": 1}, {"from": 9, "to": "Unnecessary Variable Assignment", "width": 1}, {"from": 9, "to": "Potential Integer Overflow", "width": 1}, {"from": 10, "to": "Recursion without Memoization", "width": 1}, {"from": 10, "to": "String Slicing in Recursive Calls", "width": 1}, {"from": 10, "to": "Unnecessary Looping within Recursion", "width": 1}, {"from": 11, "to": "Unnecessary Nested Loops", "width": 1}, {"from": 12, "to": "Positive", "width": 1}, {"from": 13, "to": "None", "width": 1}, {"from": 14, "to": "Unnecessary Sorting", "width": 1}, {"from": 14, "to": "Premature Optimization", "width": 1}, {"from": 15, "to": "Medium Confident", "width": 1}, {"from": 15, "to": "Unnecessary Boundary Checks", "width": 1}, {"from": 15, "to": "Redundant Boundary Checks", "width": 1}, {"from": 16, "to": "Unoptimized Search", "width": 1}, {"from": 18, "to": "Mild Concern", "width": 1}, {"from": 18, "to": "Unnecessary Data Structure", "width": 1}, {"from": 18, "to": "Suboptimal Space Complexity", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
