@@ -1,42 +1,58 @@
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
-
+import os 
+os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
+os.environ["LIBRARY_PATH"] =  "/usr/local/cuda/lib64/stubs"
+from google import genai
+google_api_key="AIzaSyCb89kkcHAjKUsJZtysTDRgTcOtoABZr4Y"
 
 def init_llm_model(model_name="Qwen/Qwen2.5-Coder-1.5B-Instruct"):
    
-     
-    # Initialize the tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if "gemini" not in model_name:
+        # Initialize the tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    # Pass the default decoding hyperparameters of Qwen2.5-7B-Instruct
-    # max_tokens is for the maximum length for generation.
-    sampling_params = SamplingParams(temperature=0.7, top_p=0.8, repetition_penalty=1.05, max_tokens=512)
+        # Pass the default decoding hyperparameters of Qwen2.5-7B-Instruct
+        # max_tokens is for the maximum length for generation.
+        
 
-    # Input the model name or path. Can be GPTQ or AWQ models.
-    llm = LLM(model=model_name,max_num_seqs=16,gpu_memory_utilization=0.3) #,tensor_parallel_size=4
+        # Input the model name or path. Can be GPTQ or AWQ models.
+        llm = LLM(model=model_name,max_num_seqs=100) # ,gpu_memory_utilization=0.3 ,tensor_parallel_size=2
+        
+        sampling_params = llm.get_default_sampling_params()
+        sampling_params.max_tokens=512
+        # sampling_params = SamplingParams(temperature=0.7, top_p=0.8, repetition_penalty=1.05, )
+    else:
+        llm = genai.Client(api_key=google_api_key)
+        tokenizer, sampling_params=None,None 
     return tokenizer, sampling_params, llm
 
-def inference(tokenizer, sampling_params, llm,prompt):
+def inference(tokenizer, sampling_params, llm,prompt,model_name):
     # Prepare your prompts
-    
-    messages = [
-        {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
-        {"role": "user", "content": prompt}
-    ]
-    text = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True
-    )
+    if "gemini" not in model_name:
+        messages = [
+            {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
+        text = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
 
-    # generate outputs
-    outputs = llm.generate([text], sampling_params,use_tqdm=False)
+        # generate outputs
+        outputs = llm.generate([text], sampling_params,use_tqdm=False)
 
-    # Print the outputs.
-    for output in outputs:
-        prompt = output.prompt
-        generated_text = output.outputs[0].text
-        # print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+        # Print the outputs.
+        for output in outputs:
+            prompt = output.prompt
+            generated_text = output.outputs[0].text
+            # print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+    else:
+        response = llm.models.generate_content(
+            model="gemini-2.0-flash", contents="Explain how AI works"
+        )
+        generated_text=response.text
     return generated_text
  
  

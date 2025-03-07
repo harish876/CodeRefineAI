@@ -1,68 +1,88 @@
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
-
+#CUDA_VISIBLE_DEVICES=4,5 PYTHONPATH=.  python llm/identify_inefficient_code.py
 import json
  
 from tqdm import tqdm 
-
+import random 
 import torch
 
 from call_llm_inference import inference, init_llm_model 
  
 def _gen_prompt(question,solution):
-    instruction_template=f"Given the question '{question}' and one solution '{solution}', check whether the solution is efficient or not. Write 'Yes' if it is correct, and 'No' if it is not"
+    instruction_template=f"Given the question '{question}' and one solution '{solution}', check whether the solution is efficient or not. Write 'Yes' if it is correct, and 'No' if it is not. No need to explain the code. Only output 'Yes' or 'No'"
     return instruction_template
  
-def check_accuracy(response_dict):
+def check_accuracy(response_dict,efficiency_type):
     correct=0
     incorrect=0
     for question_id in response_dict:
-        judgement_for_efficient_code=response_dict[question_id]["runtime_efficient_codes"]["judgement"]
-        judgement_for_inefficient_code=response_dict[question_id]["runtime_inefficient_codes"]["judgement"]
-        if "yes" in judgement_for_efficient_code.lower() and "no" in judgement_for_inefficient_code.lower():
-            incorrect+=1
-        elif "yes" in judgement_for_efficient_code.lower():
-            correct+=1
-        else:
-            incorrect+=1
-        if "yes" in judgement_for_efficient_code.lower() and "no" in judgement_for_inefficient_code.lower():
-            incorrect+=1
-        elif "no" in judgement_for_inefficient_code.lower():
-            correct+=1
-        else:
-            incorrect+=1
+        
+        efficient_code_name=f"{efficiency_type}_efficient_codes"
+        inefficient_code_name=f"{efficiency_type}_inefficient_codes"
+        
+        if efficient_code_name in response_dict[question_id] and inefficient_code_name in response_dict[question_id]:
+            judgement_for_efficient_code=response_dict[question_id][efficient_code_name]["judgement"]
+            judgement_for_inefficient_code=response_dict[question_id][inefficient_code_name]["judgement"]
+            if "yes" in judgement_for_efficient_code.lower() and "no" in judgement_for_inefficient_code.lower():
+                incorrect+=1
+            elif "yes" in judgement_for_efficient_code.lower():
+                correct+=1
+            else:
+                incorrect+=1
+            if "yes" in judgement_for_efficient_code.lower() and "no" in judgement_for_inefficient_code.lower():
+                incorrect+=1
+            elif "no" in judgement_for_inefficient_code.lower():
+                correct+=1
+            else:
+                incorrect+=1
     return correct/(correct+incorrect),correct,correct+incorrect
  
-def judge_efficiency():
-    with open('data/new_dataset.json') as f:
+
+def compare_one_type(conceptnet_json,efficient_type,response_dict,question_id,question,tokenizer, sampling_params, llm,model_name) :
+    efficient_code_key=f"{efficient_type}_efficient_codes"
+    inefficient_code_key=f"{efficient_type}_inefficient_codes"
+    if efficient_code_key in conceptnet_json and inefficient_code_key in conceptnet_json and len(conceptnet_json[efficient_code_key])>0 and len(conceptnet_json[inefficient_code_key])>0:
+        efficient_solution=conceptnet_json[efficient_code_key][0]["code"]
+        inefficient_solution=conceptnet_json[inefficient_code_key][0]["code"]
+        if question_id not in response_dict:
+            response_dict[question_id]={efficient_code_key:{},inefficient_code_key:{}}
+        else:
+            response_dict[question_id].update({efficient_code_key:{},inefficient_code_key:{}})
+        prompt  = _gen_prompt(question,efficient_solution)
+        judgement_for_efficient_code=inference(tokenizer, sampling_params, llm,prompt,model_name)
+        prompt  = _gen_prompt(question, inefficient_solution)
+        judgement_for_inefficient_code=inference(tokenizer, sampling_params, llm,prompt,model_name)
+        response_dict[question_id][efficient_code_key]={"judgement":judgement_for_efficient_code}
+        response_dict[question_id][inefficient_code_key]={"judgement":judgement_for_inefficient_code}
+    return response_dict
+ 
+def judge_efficiency(model_name):
+    with open('dataset/balanced_samples_w_one_solution_per_type.json') as f:
         conceptnet_json_list = json.load(f)
     response_dict={}
-    tokenizer, sampling_params, llm = init_llm_model()  
+    tokenizer, sampling_params, llm = init_llm_model(model_name)  
     for i,conceptnet_json in enumerate(tqdm(conceptnet_json_list)):
         question=conceptnet_json["prompt"]
         question_id=conceptnet_json["question_id"]
-        efficient_solution=conceptnet_json["runtime_efficient_codes"][0]["code"]
-        inefficient_solution=conceptnet_json["runtime_inefficient_codes"][0]["code"]
-        if question_id not in response_dict:
-            response_dict[question_id]={"runtime_efficient_codes":{},"runtime_inefficient_codes":{}}
         
-        prompt  = _gen_prompt(question,efficient_solution)
-        judgement_for_efficient_code=inference(tokenizer, sampling_params, llm,prompt)
-        prompt  = _gen_prompt(question,inefficient_solution)
-        judgement_for_inefficient_code=inference(tokenizer, sampling_params, llm,prompt)
-        response_dict[question_id]["runtime_efficient_codes"]={"judgement":judgement_for_efficient_code}
-        response_dict[question_id]["runtime_inefficient_codes"]={"judgement":judgement_for_inefficient_code}
-        if i>50:
-            break #FIXME
-        
-    with open(f'judgement.json', 'w') as fp:
-        json.dump(response_dict, fp, indent=4)
-    accuracy,correct,total=check_accuracy(response_dict)
+        efficient_type="runtime"
+        response_dict=compare_one_type(conceptnet_json,efficient_type,response_dict,question_id,question,tokenizer, sampling_params, llm,model_name) 
+        efficient_type="memory"
+        response_dict=compare_one_type(conceptnet_json,efficient_type,response_dict,question_id,question,tokenizer, sampling_params, llm,model_name) 
+        with open(f'judgement_samples_200_llama_v2.json', 'w') as fp:
+            json.dump(response_dict, fp, indent=4)
+    accuracy,correct,total=check_accuracy(response_dict,"runtime")
     print(accuracy,correct,total)
+    #save accuracy in file
+    with open(f'accuracy_llama_v2.txt', 'w') as f:
+        f.write(f'{accuracy} {correct} {total}')
+    print(f'{accuracy} {correct} {total}')
   
  
         
         
 
 if __name__ == '__main__':
-    judge_efficiency()
+    model_name="meta-llama/Llama-3.2-1B-Instruct"
+    judge_efficiency(model_name)
