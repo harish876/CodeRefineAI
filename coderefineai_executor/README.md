@@ -1,6 +1,7 @@
 # CodeRefineAI
 Can LLM's identify and remove Software Inefficiencies?
 
+
 ## Overview
 
 CodeRefineAI is a project aimed at leveraging Large Language Models (LLMs) to identify and remove software inefficiencies. The project includes a code execution framework that allows for the submission and validation of code snippets using the Judge0 API.
@@ -34,17 +35,10 @@ To install the CodeRefineAI package, follow these steps:
 ### Example: Template-Based Execution
 
 ```python
-import pandas as pd
-from core.executor.executor import Executor, ExecutorResponse
-from core.executor.config import Settings
+from coderefineai_executor import Executor,load_settings
 
 # Example settings
-settings = Settings(
-    judge0_base_url="https://api.judge0.com",
-    judge0_api_key="your_api_key",
-    self_hosted=False,
-    num_runs=1
-)
+settings = load_settings("/path/to/your/.env")
 
 # Create an instance of Executor
 executor = Executor(settings)
@@ -72,38 +66,21 @@ print(response)
 
 ### Example: Direct Code Execution
 ```python
-import pandas as pd
-from core.executor.executor import Executor, ExecutorResponse
-from core.executor.config import Settings
+from coderefineai_executor import Executor,load_settings
 
 # Example settings
-settings = Settings(
-    judge0_base_url="https://api.judge0.com",
-    judge0_api_key="your_api_key",
-    self_hosted=False,
-    num_runs=1
-)
+settings = load_settings("/path/to/your/.env")
 
-# Create an instance of Executor
 executor = Executor(settings)
-
-# Example code, test cases, and expected results
-code = """
-def add(a, b):
-    return a + b
-
-print(add(1, 2))
-"""
-test_cases = "1 2"
-expected_results = "3"
 
 # Execute the code
 response = executor.execute_code(
-    code=code,
-    test_cases=test_cases,
-    expected_results=expected_results
-)
+    code="print('Hello, world!')",
+    test_cases="",
+    expected_results="Hello, world!",
+    )
 
+    # Print the response for debugging purposes
 print(response)
 ```
 

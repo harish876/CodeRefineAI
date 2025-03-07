@@ -1,10 +1,8 @@
 from typing import List
 
-from core.executor.config import Settings, load_settings
-from core.executor.executor import Executor, ExecutorResponse
+from coderefineai_executor import Executor,load_settings,ExecutorResponse,CODE_TEMPLATE
 import pandas as pd
 from src.solution import SolutionMetric, SolutionType, get_solution
-from core.executor.utils.template import *
 import json
 import os
 import argparse
@@ -33,7 +31,7 @@ def submit(executor: Executor, source_file: str, result_file: str, solution_meta
             continue
 
         result = executor.execute(
-            code_template=template,
+            code_template=CODE_TEMPLATE,
             solution_code=solution,
             metadata=row
         )  

@@ -1,19 +1,18 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="coderefineai-executor",
-    version="0.1.0",
-    packages=find_packages(include=["core.executor", "core.executor.*"]),
+    name="coderefineai_executor",
+    version="0.1.2",
+    packages=find_packages(),
     install_requires=[
         "pandas",
-        "pydantic",
-        "pydantic-settings",
         "requests",
+        "pydantic",
+        "pydantic-settings"
     ],
     author="harish876",
     author_email="harishgokul01@gmail.com",
-    description="A package for executing code submissions.",
-    url="https://github.com/harish876/CodeRefineAI/core",
+    url="https://github.com/harish876/CodeRefineAI/coderefineai_executor",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[

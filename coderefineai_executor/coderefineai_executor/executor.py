@@ -3,11 +3,11 @@ import time
 import pandas as pd
 from pydantic import BaseModel
 import requests
-from core.executor.utils.ast import extract_class
-from core.executor.utils.base64 import encode_base64
+from .utils import extract_class
+from .utils import encode_base64
 from typing import Optional
 from requests import Response
-from core.executor.config import Settings
+from .config import Settings
 
 
 class ExecutorResponse(BaseModel):
@@ -132,7 +132,7 @@ class Executor():
             submission_details = self.get_submission_details(submission_id)
             status = submission_details.json().get("status", {}).get("description")
 
-            if status in ["Accepted", "Wrong Answer", "Compilation Error", "Runtime Error", "Time Limit Exceeded"]:
+            if status in ["Accepted", "Wrong Answer", "Compilation Error", "Runtime Error (NZEC)", "Time Limit Exceeded"]:
                 return submission_details
 
             print(f"Status: {status}. Retrying in {delay} seconds...")
