@@ -3,12 +3,10 @@ import time
 import pandas as pd
 from pydantic import BaseModel
 import requests
-from .utils import extract_class
-from .utils import encode_base64
+from .utils import extract_class, encode_base64, template as CODE_TEMPLATE
 from typing import Optional
 from requests import Response
 from .config import Settings
-
 
 class ExecutorResponse(BaseModel):
     status: str
@@ -142,7 +140,7 @@ class Executor():
 
         raise TimeoutError("Max retries exceeded while polling submission status.")
     
-    def execute(self, code_template: str, solution_code: Optional[str], metadata: pd.Series) -> ExecutorResponse:
+    def execute(self,solution_code: Optional[str], metadata: pd.Series,code_template: Optional[str] = CODE_TEMPLATE,) -> ExecutorResponse:
         """
         Executes the provided code template with the given solution code and metadata.
 

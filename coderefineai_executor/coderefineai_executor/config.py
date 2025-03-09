@@ -21,13 +21,8 @@ def load_settings(env_file_path: str) -> Settings:
 
     try:
         settings = DynamicSettings()
+        print("here",env_file_path,settings)
         return settings
     except ValidationError as e:
         print("Error loading settings. Please pass full path to .env file", e)
         raise
-
-# Example usage
-if __name__ == "__main__":
-    env_file_path = "/Users/harishgokul/CodeRefineAI/.env"  # Replace with your dynamic path
-    settings = load_settings(env_file_path)
-    print(settings)

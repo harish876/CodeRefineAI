@@ -50,7 +50,7 @@ metadata = pd.Series({
     "setup_code": "class TestCaseGenerator: ...",
     "entry_point": "main",
     "import_code": "import sys",
-    "test_cases": [{"input": "1 2", "output": "3"}]
+    "test_cases": "..." #problem dependent
 })
 
 # Execute the code
