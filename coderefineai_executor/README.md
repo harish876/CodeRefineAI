@@ -69,7 +69,12 @@ print(response)
 from coderefineai_executor import Executor,load_settings
 
 # Example settings
-settings = load_settings("/path/to/your/.env")
+settings = Settings(
+    env="dev",
+    self_hosted=True,
+    judge0_base_url="http://64.23.144.74:2358",
+    judge0_api_key="",
+)
 
 executor = Executor(settings)
 
@@ -91,10 +96,10 @@ The `Settings` class is used to configure the Executor. Here is an example confi
 from core.executor.config import Settings
 
 settings = Settings(
-    judge0_base_url="https://api.judge0.com",
-    judge0_api_key="your_api_key",
-    self_hosted=False,
-    num_runs=1
+    env="dev",
+    self_hosted=True,
+    judge0_base_url="http://64.23.144.74:2358",
+    judge0_api_key="",
 )
 ```
 
