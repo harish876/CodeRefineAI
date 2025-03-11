@@ -1,19 +1,15 @@
 from typing import List
 
-from openai import NoneType
-from core.executor.config import Settings
-from core.executor.executor import Executor, ExecutorResponse
+from coderefineai_executor import Executor,load_settings,ExecutorResponse,CODE_TEMPLATE
 import pandas as pd
-from core.executor.solution import SolutionMetric, SolutionType, get_solution
-from core.utils.template import *
+from src.solution import SolutionMetric, SolutionType, get_solution
 import json
 import os
-import time
 import argparse
 
 def submit(executor: Executor, source_file: str, result_file: str, solution_metadata: dict[str,any]):
     df = pd.read_json(source_file)
-        
+
     submissions: List[ExecutorResponse] = []
     for _, row in df.iterrows():
         id = row["question_id"]
@@ -29,21 +25,21 @@ def submit(executor: Executor, source_file: str, result_file: str, solution_meta
         if solution is None:
             print(f"Error at question_id {id}.No solution found")
             continue
-        
+
         if error is not None:
             print(f"Error at question_id {id} {error}.")
             continue
-        
+
         result = executor.execute(
-            code_template=template,
+            code_template=CODE_TEMPLATE,
             solution_code=solution,
             metadata=row
         )  
         submissions.append(result)      
-    
+
     with open(result_file, "w") as outfile:
         json.dump([submission.model_dump() for submission in submissions], outfile, indent=4)
-    
+
     print("Submission calls made successfully")
 
 def get_results(executor: Executor, result_file: str):
@@ -64,7 +60,7 @@ def get_results(executor: Executor, result_file: str):
 
 def main():
     data_dir = "/Users/harishgokul/CodeRefineAI/dataset"
-    settings = Settings()
+    settings = load_settings("/Users/harishgokul/CodeRefineAI/.env")
     
     parser = argparse.ArgumentParser(description="Submit or get results from Judge0")
     parser.add_argument("action", choices=["submit", "get"], help="Action to perform")

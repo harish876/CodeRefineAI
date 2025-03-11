@@ -2,8 +2,9 @@
 name = "core"
 version = "0.1.0"
 description = "Code Executor Abstraction For RCE of Code"
-authors = ["harish876 <harishgokul01@gmail.com>"]
+authors = [ "harish876 <harishgokul01@gmail.com>" ]
 readme = "README.md"
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -20,9 +21,14 @@ numpy = "^2.2.2"
 radon = "^6.0.1"
 llm-sandbox = "^0.2.1"
 pandas = "^2.2.3"
-smolagents = {extras = ["litellm"], version = "^1.8.1"}
+twine = "^6.1.0"
+
+
+[tool.poetry.dependencies.smolagents]
+extras = [ "litellm" ]
+version = "^1.8.1"
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = [ "poetry-core>=1.0.0" ]
 build-backend = "poetry.core.masonry.api"
