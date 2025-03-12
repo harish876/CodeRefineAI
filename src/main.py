@@ -1,8 +1,9 @@
 from typing import List
+from unittest import result
 
-from coderefineai_executor import Executor,load_settings,ExecutorResponse,CODE_TEMPLATE
+from coderefineai_executor import Executor,Settings,ExecutorResponse,CODE_TEMPLATE
 import pandas as pd
-from src.solution import SolutionMetric, SolutionType, get_solution
+from solution import SolutionMetric, SolutionType, get_solution
 import json
 import os
 import argparse
@@ -31,7 +32,6 @@ def submit(executor: Executor, source_file: str, result_file: str, solution_meta
             continue
 
         result = executor.execute(
-            code_template=CODE_TEMPLATE,
             solution_code=solution,
             metadata=row
         )  
@@ -59,11 +59,17 @@ def get_results(executor: Executor, result_file: str):
     print("Submission results saved successfully")
 
 def main():
-    data_dir = "/Users/harishgokul/CodeRefineAI/dataset"
-    settings = load_settings("/Users/harishgokul/CodeRefineAI/.env")
+    data_dir = "/Users/harishgokul/CodeRefineAI/dataset/P2" #changing this for P2.
+    settings = Settings(
+        env="dev",
+        self_hosted=True,
+        judge0_base_url="http://64.23.144.74:2358",
+        judge0_api_key="",
+    )
     
     parser = argparse.ArgumentParser(description="Submit or get results from Judge0")
     parser.add_argument("action", choices=["submit", "get"], help="Action to perform")
+    parser.add_argument("model", choices=["gemini", "llama"], help="Model used to perform the experiment")
     parser.add_argument("--file", help="Source file containing dataset. Do not add the extension", default="dataset_preview")
     parser.add_argument("--dir", help="Base directory to fetch files from", default=data_dir)
     parser.add_argument("--solution_file", help="Source file containing Solution dataset. Solutions from LLM's", default=None)
@@ -78,8 +84,14 @@ def main():
         data_dir = args.dir
     
     file_name = args.file
+    model_name = args.model
     source_file = os.path.join(data_dir, f"{file_name}.json")
-    result_file = os.path.join(data_dir, f"{file_name}_submissions.json")
+    
+    if args.solution_file is not None:
+        result_file = os.path.join(data_dir, f"{file_name}_{model_name}_codegen_submissions.json")
+    else:
+        result_file = os.path.join(data_dir, f"{file_name}_{model_name}_reference_submissions.json")
+        
     solution_file = os.path.join(data_dir, f"{args.solution_file}.json") if args.solution_file else None
     
     if not os.path.exists(source_file):
@@ -92,6 +104,7 @@ def main():
         
     print("Args ================================")
     print(f"Data Directory: {data_dir}")
+    print(f"Model: {model_name}")
     print(f"Source File: {source_file}")
     print(f"Result File: {result_file}")
     print(f"Solution File: {solution_file}")
