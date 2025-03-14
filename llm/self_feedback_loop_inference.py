@@ -2,10 +2,16 @@ import json
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# Load smaller DeepSeek Coder model for Colab
-MODEL_NAME = "deepseek-ai/deepseek-coder-1.3b"  
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.float16, device_map="auto")
+HUGGINGFACE_TOKEN = "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"
+
+
+MODEL_NAME = "deepseek-ai/deepseek-coder-1.3b"
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, token=HUGGINGFACE_TOKEN)
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_NAME, torch_dtype=torch.float16, device_map="auto", token=HUGGINGFACE_TOKEN
+)
+
 
 # Function to run inference
 def run_deepseek(prompt):
@@ -44,7 +50,7 @@ def process_question(question):
         "refined_code": refined_code
     }
 
-# Main function
+
 def main():
     # Load dataset
     with open('/mnt/data/dataset_preview.json', 'r') as f:
