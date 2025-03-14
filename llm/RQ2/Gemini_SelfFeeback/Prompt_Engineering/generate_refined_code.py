@@ -16,7 +16,6 @@ model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Function to process and generate optimized code
 def generate_refined_code():
-    optimized_solutions = []
     api_calls = 0  # Track API call count
 
     for sample in dataset[:200]:
@@ -55,7 +54,7 @@ def generate_refined_code():
             print("⏳ API limit reached. Sleeping for 60 seconds...")
             time.sleep(60)
 
-    return optimized_solutions
+    return dataset
 
 # Run the function
 optimized_results = generate_refined_code()
