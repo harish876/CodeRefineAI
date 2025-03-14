@@ -4,7 +4,7 @@ import google.generativeai as genai
 
 
 
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Pass_Output/executed_first_pass.json", "r") as f:
+with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Refinement_Results/output_samples_refinement1.json", "r") as f:
     dataset = json.load(f)
 
 # ✅ Replace with your actual API Key
@@ -61,5 +61,5 @@ def generate_feedback():
 optimized_results = generate_feedback()
 
 # Save the results
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Pass_Output/executed_first_pass_with_feedback.json", "w") as f:
+with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Refinement_Results/executed_refinement1.json", "w") as f:
     json.dump(optimized_results, f, indent=4)

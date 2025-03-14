@@ -4,7 +4,7 @@ import pandas as pd
 from coderefineai_executor import Executor
 
 # Load the optimized_results.json file
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Pass_Output/output_samples_first_pass.json", "r") as file:
+with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Refinement_Results/output_samples_refinement1.json", "r") as file:
     data = json.load(file)
 
 # Initialize Executor settings
@@ -60,5 +60,5 @@ for item in data:
 
 
 # Save optimized results to a JSON file
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Pass_Output/executed_first_pass.json", "w") as output_file:
+with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Refinement_Results/executed_refinement1.json", "w") as output_file:
     json.dump(data, output_file, indent=4)
