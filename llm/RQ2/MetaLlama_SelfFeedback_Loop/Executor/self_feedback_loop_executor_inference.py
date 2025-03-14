@@ -28,7 +28,7 @@ for item in data:
                 "setup_code": item.get("setup_code"),
                 "entry_point": item.get("entry_point"),
                 "import_code": item.get("import_code"),
-                "test_cases": item.get("testcases")
+                "test_cases": item.get("test_cases")
             }) 
 
     if solution_code and not metadata.empty:
@@ -40,7 +40,8 @@ for item in data:
             )
             print("Execution Response:", response)
 
-            submission = executor.get_submission_details(submission_id=response.token)
+            #submission = executor.get_submission_details(submission_id=response.token)
+            #please use either one, 2 API calls make my server sad
            
 
             # Polls for until response is Accepted or there is a runtime error
