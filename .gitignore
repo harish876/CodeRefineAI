@@ -6,7 +6,6 @@ coderefineai_executor/dist
 coderefineai_executor/coderefineai_executor.egg-info
 poetry.lock
 crystalblue
-dataset
 dist
 code_data.json
 dataset.json
