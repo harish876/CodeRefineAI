@@ -4,11 +4,11 @@ import google.generativeai as genai
 
 
 
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/First_Refinement_Results/executed_refinement1.json", "r") as f:
+with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/Second_Refinement_Results/executed_refinement2_with_feedback.json", "r") as f:
     dataset = json.load(f)
 
 # ✅ Replace with your actual API Key
-GEMINI_API_KEY = "AIzaSyDL_hqHaSfT2NPDZz5XXnBboJz3Piio7MY"
+GEMINI_API_KEY = "AIzaSyBVQ38Dc-R6Y5jH3omvSu9KOLNT2EQKztw"
 # Initialize Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-2.0-flash")
@@ -60,7 +60,7 @@ def generate_refined_code():
 optimized_results = generate_refined_code()
 
 # Save the results
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/Second_Refinement_Results/output_samples_refinement2.json", "w") as f:
+with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/Third_Refinement_Results/output_samples_refinement3.json", "w") as f:
     json.dump(optimized_results, f, indent=4)
 
 print("🎉 Optimized code has been saved to optimized_codes.json")
