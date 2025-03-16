@@ -87,10 +87,23 @@ def main():
     model_name = args.model
     source_file = os.path.join(data_dir, f"{file_name}.json")
     
+    prefix_mapping = {
+        ("runtime", "efficient"): "rt_eff",
+        ("runtime", "inefficient"): "rt_ineff",
+        ("memory", "efficient"): "mem_eff",
+        ("memory", "inefficient"): "mem_ineff"
+    }
+    
     if args.solution_file is not None:
         result_file = os.path.join(data_dir, f"{file_name}_{model_name}_codegen_submissions.json")
     else:
-        result_file = os.path.join(data_dir, f"{file_name}_{model_name}_reference_submissions.json")
+        prefix = prefix_mapping.get((args.solution_metric, args.solution_type), None)
+        if prefix is None:
+            return Exception(f"Invalid solution metric and solution type combination. Please provide valid values.")
+        
+        result_file = os.path.join(data_dir, f"{file_name}_{model_name}_reference_{prefix}_submissions.json")
+            
+
         
     solution_file = os.path.join(data_dir, f"{args.solution_file}.json") if args.solution_file else None
     
