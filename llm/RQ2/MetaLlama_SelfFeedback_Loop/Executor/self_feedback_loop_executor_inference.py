@@ -52,6 +52,8 @@ for item in data:
             item["submission_details"] = submission_details
             item["question_id"] = item.get("questionId")
             item["title"]= item.get("name")
+            del item["test_cases"]
+            del item["runtime_efficient_codes"]
 
         except Exception as e:
             print(f"Error during execution: {e}")
