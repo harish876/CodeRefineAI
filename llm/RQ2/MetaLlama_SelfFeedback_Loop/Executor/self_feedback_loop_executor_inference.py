@@ -4,7 +4,7 @@ import pandas as pd
 from coderefineai_executor import Executor
 
 # Load the optimized_results.json file
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/Third_Refinement_Results/output_samples_refinement3.json", "r") as file:
+with open("llm/RQ2/MetaLlama_SelfFeedback_Loop/Output_Results/Third_Refinement_Results/executed_refinement3.json", "r") as file:
     data = json.load(file)
 
 # Initialize Executor settings
@@ -28,7 +28,7 @@ for item in data:
                 "setup_code": item.get("setup_code"),
                 "entry_point": item.get("entry_point"),
                 "import_code": item.get("import_code"),
-                "test_cases": item.get("testcases")
+                "test_cases": item.get("test_cases")
             }) 
 
     if solution_code and not metadata.empty:
@@ -49,6 +49,9 @@ for item in data:
             submission_details = submission.json()
             item["runtime"] = submission_details.get("time")
             item["status"] = submission_details.get("status", {}).get("description", "Unknown Status")
+            item["submission_details"] = submission_details
+            item["question_id"] = item.get("questionId")
+            item["title"]= item.get("name")
 
         except Exception as e:
             print(f"Error during execution: {e}")
@@ -60,5 +63,5 @@ for item in data:
 
 
 # Save optimized results to a JSON file
-with open("llm/RQ2/Gemini_SelfFeeback/Output_Results/Third_Refinement_Results/executed_refinement3.json", "w") as output_file:
+with open("llm/RQ2/MetaLlama_SelfFeedback_Loop/Output_Results/Evaluation_Reslts/executed_refinement3_evaluation.json", "w") as output_file:
     json.dump(data, output_file, indent=4)
