@@ -19,8 +19,9 @@ This balanced collection ensures comprehensive testing across different algorith
 
 Dataset has been augmented to categorise the solutions into the category mentioned above . Here is the link to the dataset and the script used for augmentation.
 
+-   Original Dataset  - [Venus_t] (https://huggingface.co/datasets/Elfsong/Venus_t)
 -   Augumented Dataset - [Dataset](/dataset/balanced_samples.json)
--   Augmentation Script - [Todo]
+-   Augmentation Script - [Processing Script](/dataset/processing_dataset.ipynb)
 
 
 # Tools Used
