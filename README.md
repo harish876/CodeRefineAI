@@ -103,10 +103,19 @@ Where `metric_type` will be one of:
 - Configure the Judge0 instance in the settings section of the script.
 
 
-# Research Question 1 (TODO)
+# Research Question 1 
+## Dataset
+- Dataset for Prompting:
+    - **Script to sample one solution per efficiency type** : [RQ1_data](/llm/RQ1/sample_one_set_solution_per_problem.py)
+## Methodolgy
+- **Prompting** :
+    - **Purpose**: Trigger LLMs to evaluate whether the given code is efficient or not.
+    -  **Gemini Script** - [Gemini_Prompting](/llm/RQ1/identify_inefficient_code_gemini.py) 
+    -  **Llama Script** -[Llama_Prompting](/llm/RQ1/identify_inefficient_code.py)
 - **Analysis**: 
-    - **Description**:
-    - **Results file**: [/dataset/final_result.ipynb](/dataset/final_result.ipynb)
+    - **Description**: Obtain the accuracy of LLMs in identifying inefficient code.
+    - **Gemini Script**: [Gemini_accuracy](/llm/RQ1/compute_accuracy_gemini.py)
+    - **Llama Script**: [LLaMA_accuracy](/llm/RQ1/compute_accuracy.py)
 
 # Research Question 2
 ## Dataset
