@@ -1,5 +1,5 @@
 from google import genai
-google_api_key="AIzaSyCb89kkcHAjKUsJZtysTDRgTcOtoABZr4Y"
+from llm.key import google_api_key 
 client = genai.Client(api_key=google_api_key)
 response = client.models.generate_content(
     model="gemini-2.0-flash", contents="Explain how AI works"

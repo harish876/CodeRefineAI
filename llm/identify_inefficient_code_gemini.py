@@ -7,7 +7,7 @@ from tqdm import tqdm
 import random 
 import torch
 
-from call_llm_inference import inference, init_llm_model 
+from call_llm_inference_gemini import inference_gemini, init_llm_model_gemini 
  
 def _gen_prompt(question,solution,efficient_type):
     instruction_template=f"Given the question '{question}' and one solution '{solution}', check whether the solution is efficient or not with respect to {efficient_type}. Write 'Yes' if it is correct, and 'No' if it is not. No need to explain the code. Only output 'Yes' or 'No'"
@@ -50,9 +50,9 @@ def compare_one_type(conceptnet_json,efficient_type,response_dict,question_id,qu
         else:
             response_dict[question_id].update({efficient_code_key:{},inefficient_code_key:{}})
         prompt  = _gen_prompt(question,efficient_solution,efficient_type)
-        judgement_for_efficient_code=inference(tokenizer, sampling_params, llm,prompt,model_name)
+        judgement_for_efficient_code=inference_gemini(tokenizer, sampling_params, llm,prompt,model_name)
         prompt  = _gen_prompt(question, inefficient_solution,efficient_type)
-        judgement_for_inefficient_code=inference(tokenizer, sampling_params, llm,prompt,model_name)
+        judgement_for_inefficient_code=inference_gemini(tokenizer, sampling_params, llm,prompt,model_name)
         response_dict[question_id][efficient_code_key]={"judgement":judgement_for_efficient_code}
         response_dict[question_id][inefficient_code_key]={"judgement":judgement_for_inefficient_code}
     return response_dict
@@ -61,7 +61,7 @@ def judge_efficiency(model_name,model_post_fix):
     with open('dataset/balanced_samples_w_one_solution_per_type.json') as f:
         conceptnet_json_list = json.load(f)
     response_dict={}
-    tokenizer, sampling_params, llm = init_llm_model(model_name)  
+    tokenizer, sampling_params, llm = init_llm_model_gemini(model_name)  
     for i,conceptnet_json in enumerate(tqdm(conceptnet_json_list)):
         question=conceptnet_json["prompt"]
         question_id=conceptnet_json["question_id"]
@@ -84,7 +84,7 @@ def judge_efficiency(model_name,model_post_fix):
         
 
 if __name__ == '__main__':
-    model_name="meta-llama/Llama-3.2-1B-Instruct"
+    model_name="gemini-2.0-flash"
     model_post_fix=model_name.replace("/","_")
     print(f"use model {model_name}")
     judge_efficiency(model_name,model_post_fix)
