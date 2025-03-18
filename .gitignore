@@ -16,3 +16,12 @@ test.ipynb
 dataset/Inefficient_reasoning_bter.json
 dataset/Inefficient_reasoning.json
 dataset/balanced_samples.json
+accuracy_llama_gemini-2.0-flash.txt
+judgement_samples_200_gemini-2.0-flash.json
+judgement_samples_200_llama_v2.json
+dataset/balanced_samples_w_one_solution_per_type.json
+dataset/judgement_samples_200.json 
+dataset/judgement_samples_200_llama.json 
+judgement_samples_200_llama.json
+judgement_samples_200.json
+llm/real_key.py
