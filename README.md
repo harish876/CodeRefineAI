@@ -144,13 +144,13 @@ Where `metric_type` will be one of:
     -  **Llama Gemini Reasoning Script** -[Llama_Vanilla_Prompting](/llm/RQ2/Reasoning_Based_Prompting/Reasoning_Based_prompting_MetaLlama..ipynb) 
 
 - **Analysis**: 
-    - **Description**:
+    - **Description**: Obtain the results from [final_results.ipynb](/dataset/processing_dataset.ipynb). Sections for RQ2 and RQ3 are labelled in the notebook and can be found under the outlines section.
     - **Results file**: [/dataset/final_result.ipynb](/dataset/final_result.ipynb)
 
 
-# Research Question 3 (TODO)
+# Research Question 3
 - **Analysis**: 
-    - **Description**:
+    - **Description**: Obtain the results from [final_results.ipynb](/dataset/processing_dataset.ipynb). Sections for RQ2 and RQ3 are labelled in the notebook and can be found under the outlines section.
     - **Results file**: [/dataset/final_result.ipynb](/dataset/final_result.ipynb)
 
 
